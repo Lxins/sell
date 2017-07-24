@@ -16,11 +16,11 @@
           type: Number
         }
       },
-      // computed: {
-      //   fN() {
-      //     return 'flex-' + this.flexNum
-      //   }
-      // },
+      computed: {
+        fN() {
+          return 'flex-' + this.flexNum
+        }
+      },
       created() {
         this.info = ['优惠信息', '商家公告']
       }

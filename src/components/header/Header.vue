@@ -40,9 +40,9 @@
         </div>
         <v-flex :flexNum="0"></v-flex>
         <ul v-if="seller.supports" class="supports">
-          <li class="supports-tiem" v-for="item, index in seller.supports" :key="item.id">
-            <span class="icon" :class="classMap[seller.supports[index].type]"></span>
-            <span class="text">{{seller.supports[index].description}}</span>
+          <li class="supports-tiem" v-for="item in seller.supports" :key="item.id">
+            <span class="icon" :class="classMap[item.type]"></span>
+            <span class="text">{{item.description}}</span>
           </li>
         </ul>
         <v-flex :flexNum="1"></v-flex>
