@@ -4,7 +4,7 @@
       <ul>
         <li v-for="item in goods" :key="item.id" class="menu-item">
           <span class="text border-1px">
-            <span v-show="item.type>0" class="icon" :class="classMap[item.type]"></span>{{item.name}}
+            <mmp v-show="item.type>0" class="icon-3" :icon="classMap[item.type]"></mmp>{{item.name}}
           </span>
         </li>
       </ul>
@@ -38,6 +38,7 @@
 </template>
 
 <script>
+  import Icons from '@/components/Icons/Icons'
   import BScroll from 'better-scroll'
 
   const ERR_OK = 0
@@ -71,6 +72,9 @@
 
         this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {})
       }
+    },
+    components: {
+      'mmp': Icons
     }
 }
 </script>
@@ -95,24 +99,6 @@
         width: 56px
         line-height: 14px
         padding: 0 12px
-        .icon
-          display: inline-block
-          vertical-align: top
-          width: 12px
-          height: 12px
-          margin-right: 4px
-          background-size: 12px 12px
-          background-repeat: no-repeat
-          &.decrease
-            @include bg-image('decrease_3')
-          &.discount
-              @include bg-image('discount_3')
-          &.guarantee
-              @include bg-image('guarantee_3')
-          &.invoice
-              @include bg-image('invoice_3')
-          &.special
-              @include bg-image('special_3')
         .text
           display: table-cell
           width: 56px
