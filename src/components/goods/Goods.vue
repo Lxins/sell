@@ -4,7 +4,7 @@
       <ul>
         <li v-for="item in goods" :key="item.id" class="menu-item">
           <span class="text border-1px">
-            <mmp v-show="item.type>0" class="icon-3" :icon="classMap[item.type]"></mmp>{{item.name}}
+            <v-icon v-show="item.type>0" class="icon-3" :icon="classMap[item.type]"></v-icon>{{item.name}}
           </span>
         </li>
       </ul>
@@ -74,7 +74,7 @@
       }
     },
     components: {
-      'mmp': Icons
+      'v-icon': Icons
     }
 }
 </script>
