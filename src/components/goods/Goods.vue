@@ -2,7 +2,7 @@
   <div class="goods">
     <div class="menu-wrapper" ref="menuWrapper">
       <ul>
-        <li v-for="item in goods" :key="item.id" class="menu-item">
+        <li v-for="(item, index) in goods" :key="item.id" class="menu-item" :class="{'current': currentIndex === index}" @click="selectMenu(index, $event)">
           <span class="text border-1px">
             <v-icon v-show="item.type>0" class="icon-3" :icon="classMap[item.type]"></v-icon>{{item.name}}
           </span>
@@ -11,7 +11,7 @@
     </div>
     <div class="foods-wrapper" ref="foodsWrapper">
       <ul>
-        <li v-for="item in goods" :key="item.id" class="food-list">
+        <li v-for="item in goods" :key="item.id" class="food-list food-list-hook">
           <h1 class="tittle">{{item.name}}</h1>
           <ul>
             <li v-for="food in item.foods" :key="food.id" class="food-item">
@@ -34,11 +34,13 @@
         </li>
       </ul>
     </div>
+     <shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
   </div>
 </template>
 
 <script>
   import Icons from '@/components/Icons/Icons'
+  import Shopcart from '@/components/shopcart/Shopcart'
   import BScroll from 'better-scroll'
 
   const ERR_OK = 0
@@ -51,7 +53,20 @@
     },
     data() {
       return {
-        goods: []
+        goods: [],
+        listHeight: [],
+        scrollY: 0
+      }
+    },
+    computed: {
+      currentIndex() {
+        for (let i = 0; i < this.listHeight.length; i++) {
+          let height1 = this.listHeight[i]
+          let height2 = this.listHeight[i + 1]
+          if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {
+            return i
+          }
+        }
       }
     },
     created() {
@@ -60,21 +75,49 @@
         response = response.body
         if (response.errno === ERR_OK) {
           this.goods = response.data
-          this.$nextTick(() => {
+          this.$nextTick(() => {  // DOM更新
             this._initScroll()
+            this._calculateHeight()
           })
         }
       })
     },
     methods: {
+      selectMenu(index, event) {
+        if (!event._constructed) {
+          return  // pc下 不会再次触发事件
+        }
+        let foodList = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')
+        let el = foodList[index]
+        this.foodsScroll.scrollToElement(el, 300)
+      },
       _initScroll() {
-        this.menuScrol = new BScroll(this.$refs.menuWrapper, {})
+        this.menuScrol = new BScroll(this.$refs.menuWrapper, {
+          click: true
+        })
 
-        this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {})
+        this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {
+          probeType: 3
+        })
+
+        this.foodsScroll.on('scroll', (pos) => {
+          this.scrollY = Math.abs(Math.round(pos.y))
+        })
+      },
+      _calculateHeight() {
+        let foodList = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')
+        let height = 0
+        this.listHeight.push(height)
+        for (let i = 0; i < foodList.length; i++) {
+          let item = foodList[i]
+          height += item.clientHeight
+          this.listHeight.push(height)
+        }
       }
     },
     components: {
-      'v-icon': Icons
+      'v-icon': Icons,
+      Shopcart
     }
 }
 </script>
@@ -99,6 +142,14 @@
         width: 56px
         line-height: 14px
         padding: 0 12px
+        &.current
+          position: relative
+          z-index: 10
+          margin-top: -1px
+          background: #fff
+          font-weight: 700
+          .text
+            border-none()
         .text
           display: table-cell
           width: 56px
