@@ -22,11 +22,13 @@
                 <h2 class="name">{{food.name}}</h2>
                 <p class="desc">{{food.description}}</p>
                 <div class="extra">
-                  <span class="count">月售{{food.sellCount}}价</span>
-                  <span>好评率{{food.rating}}%</span>
+                  <span class="count">月售{{food.sellCount}}价</span><span>好评率{{food.rating}}%</span>
                 </div>
                 <div class="price">
                   <span class="now">￥{{food.price}}</span><span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
+                </div>
+                <div class="cartcontrol-wrapper">
+                  <cartcontrol :food="food"></cartcontrol>
                 </div>
               </div>
             </li>
@@ -34,13 +36,14 @@
         </li>
       </ul>
     </div>
-     <shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
+     <shopcart :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
   </div>
 </template>
 
 <script>
   import Icons from '@/components/Icons/Icons'
   import Shopcart from '@/components/shopcart/Shopcart'
+  import Cartcontrol from '@/components/cartcontrol/Cartcontrol'
   import BScroll from 'better-scroll'
 
   const ERR_OK = 0
@@ -67,6 +70,18 @@
             return i
           }
         }
+        return 0
+      },
+      selectFoods() {
+        let foods = []
+        this.goods.forEach((good) => {
+          good.foods.forEach((food) => {
+            if (food.count) {
+              foods.push(food)
+            }
+          })
+        })
+        return foods
       }
     },
     created() {
@@ -97,6 +112,7 @@
         })
 
         this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {
+          click: true,
           probeType: 3
         })
 
@@ -117,7 +133,8 @@
     },
     components: {
       'v-icon': Icons,
-      Shopcart
+      Shopcart,
+      Cartcontrol
     }
 }
 </script>
@@ -169,6 +186,7 @@
       .food-item
         display: flex
         margin: 18px
+        padding-bottom: 18px
         @include border-1px(rgba(7, 17, 27, .1))
         &:last-child
           @include border-none()
@@ -204,5 +222,9 @@
               text-decoration: line-th-through
               font-size: 10px
               color: rgb(147, 153, 159)
+          .cartcontrol-wrapper
+            position: absolute
+            right: 0
+            bottom: 12px
   </style>
 
