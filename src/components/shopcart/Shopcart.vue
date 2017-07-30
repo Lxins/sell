@@ -82,7 +82,7 @@
 <style lang="sass">
   .shopcart
     position: fixed
-    let: 0
+    left: 0
     bottom: 0
     z-index: 50
     width: 100%

@@ -14,7 +14,7 @@
         <li v-for="item in goods" :key="item.id" class="food-list food-list-hook">
           <h1 class="tittle">{{item.name}}</h1>
           <ul>
-            <li v-for="food in item.foods" :key="food.id" class="food-item">
+            <li @click="selectFood(food, $event)" v-for="food in item.foods" :key="food.id" class="food-item">
               <div class="icon">
                 <img :src="food.icon" width="57" height="57">
               </div>
@@ -37,6 +37,7 @@
       </ul>
     </div>
      <shopcart :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
+    <food :food="selectedFood" ref="food"></food>
   </div>
 </template>
 
@@ -44,6 +45,7 @@
   import Icons from '@/components/Icons/Icons'
   import Shopcart from '@/components/shopcart/Shopcart'
   import Cartcontrol from '@/components/cartcontrol/Cartcontrol'
+  import Food from '@/components/food/Food'
   import BScroll from 'better-scroll'
 
   const ERR_OK = 0
@@ -58,7 +60,8 @@
       return {
         goods: [],
         listHeight: [],
-        scrollY: 0
+        scrollY: 0,
+        selectedFood: {}
       }
     },
     computed: {
@@ -106,6 +109,13 @@
         let el = foodList[index]
         this.foodsScroll.scrollToElement(el, 300)
       },
+      selectFood(food, event) {
+        if (!event._constructed) {
+          return  // pc下 不会再次触发事件
+        }
+        this.selectedFood = food
+        this.$refs.food.show()
+      },
       _initScroll() {
         this.menuScrol = new BScroll(this.$refs.menuWrapper, {
           click: true
@@ -134,7 +144,8 @@
     components: {
       'v-icon': Icons,
       Shopcart,
-      Cartcontrol
+      Cartcontrol,
+      Food
     }
 }
 </script>
@@ -219,7 +230,7 @@
               font-size: 14px
               color: rgb(240, 20, 20)
             .old
-              text-decoration: line-th-through
+              text-decoration: line-through
               font-size: 10px
               color: rgb(147, 153, 159)
           .cartcontrol-wrapper

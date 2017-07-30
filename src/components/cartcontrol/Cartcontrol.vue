@@ -1,10 +1,10 @@
 <template>
   <div class="cartcontrol">
     <transition name="fade">
-      <div class="cart-decrease icon-remove_circle_outline" v-show="food.count > 0" @click="decreaseCart($event)"></div>
+      <div class="cart-decrease icon-remove_circle_outline" v-show="food.count > 0" @click.stop.prevent="decreaseCart($event)"></div>
     </transition>
       <div class="cart-count" v-show="food.count > 0">{{food.count}}</div>
-    <div class="cart-add icon-add_circle" @click="addCart($event)"></div>
+    <div class="cart-add icon-add_circle" @click.stop.prevent="addCart($event)"></div>
   </div>
 </template>
 
@@ -62,7 +62,7 @@
       line-height: 24px
       text-align: center
       font-size: 10px
-      color: rbg(147, 153, 159)
+      color: rgb(147, 153, 159)
     .cart-add
 
     .fade-enter-active, .fade-leave-active
