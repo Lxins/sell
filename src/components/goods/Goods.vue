@@ -123,7 +123,7 @@
 
         this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {
           click: true,
-          probeType: 3
+          probeType: 3  // 除了手指 move 的时候派发scroll事件，在 swipe（手指迅速滑动一小段距离）的情况下，列表会有一个长距离的滚动动画，这个滚动的动画过程中也会实时派发滚动事件
         })
 
         this.foodsScroll.on('scroll', (pos) => {
@@ -177,7 +177,7 @@
           background: #fff
           font-weight: 700
           .text
-            border-none()
+            @include border-none()
         .text
           display: table-cell
           width: 56px
