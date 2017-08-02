@@ -24,9 +24,7 @@
                 <div class="extra">
                   <span class="count">月售{{food.sellCount}}价</span><span>好评率{{food.rating}}%</span>
                 </div>
-                <div class="price">
-                  <span class="now">￥{{food.price}}</span><span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
-                </div>
+                <prices :food="food"></prices>
                 <div class="cartcontrol-wrapper">
                   <cartcontrol :food="food"></cartcontrol>
                 </div>
@@ -44,6 +42,7 @@
 <script>
   import Icons from '@/components/Icons/Icons'
   import Shopcart from '@/components/shopcart/Shopcart'
+  import Prices from '@/components/prices/Prices'
   import Cartcontrol from '@/components/cartcontrol/Cartcontrol'
   import Food from '@/components/food/Food'
   import BScroll from 'better-scroll'
@@ -144,6 +143,7 @@
     components: {
       'v-icon': Icons,
       Shopcart,
+      Prices,
       Cartcontrol,
       Food
     }
@@ -222,17 +222,6 @@
           .extra
             .count
               margin-right: 12px
-          .price
-            font-weight: 700
-            line-height: 24px
-            .now
-              margin-right: 8px
-              font-size: 14px
-              color: rgb(240, 20, 20)
-            .old
-              text-decoration: line-through
-              font-size: 10px
-              color: rgb(147, 153, 159)
           .cartcontrol-wrapper
             position: absolute
             right: 0

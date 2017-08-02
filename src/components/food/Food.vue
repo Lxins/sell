@@ -14,9 +14,7 @@
             <span class="sell-count">月售{{food.sellCount}}份</span>
             <span class="rating">好评率{{food.rating}}%</span>
           </div>
-          <div class="price">
-            <span class="now">￥{{food.price}}</span><span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
-          </div>
+          <prices :food="food"></prices>
           <div class="cartcontrol-wrapper">
             <cartcontrol :food="food"></cartcontrol>
           </div>
@@ -40,13 +38,13 @@
                   <span class="name">{{rating.username}}</span>
                   <img :src="rating.avatar" width="12" height="12" class="avatar">
                 </div>
-                <div class="time">{{rating.rateTime}}</div>
+                <div class="time">{{rating.rateTime | formatDate}}</div>
                 <p class="text">
                   <span :class="{'icon-thumb_up':rating.rateType===0, 'icon-thumb_down':rating.rateType===1}"></span>{{rating.text}}
                 </p>
               </li>
             </ul>
-            <div class="no-rating" v-show="!food.ratings || !food.ratings.length"></div>
+            <div class="no-rating" v-show="!food.ratings || !food.ratings.length">暂无评价</div>
           </div>
         </div>
       </div>
@@ -55,9 +53,13 @@
 </template>
 
 <script>
+  // export default 所以不加花括号 因为是export function 所以要加花括号
+
   import BScroll from 'better-scroll'
   import Vue from 'vue'
+  import {formatDate} from '@/common/js/date'
   import Cartcontrol from '@/components/cartcontrol/Cartcontrol'
+  import Prices from '@/components/prices/Prices'
   import Split from '@/components/split/Split'
   import Ratingselect from '@/components/ratingselect/Ratingselect'
 
@@ -84,8 +86,6 @@
     methods: {
       show() {
         this.showFlag = true
-        this.selectType = ALL
-        this.onlyContent = false
         this.$nextTick(() => {
           if (!this.scroll) {
             this.scroll = new BScroll(this.$refs.food, {
@@ -117,13 +117,26 @@
       },
       ratingtypeSelect(type) {
         this.selectType = type
+        this.$nextTick(() => {
+          this.scroll.refresh()
+        })
       },
       contentToggle(onlyContent) {
         this.onlyContent = onlyContent
+        this.$nextTick(() => {
+          this.scroll.refresh()
+        })
+      }
+    },
+    filters: {
+      formatDate(time) {
+        let date = new Date(time)
+        return formatDate(date, 'yyyy-MM-dd hh:mm')
       }
     },
     components: {
       Cartcontrol,
+      Prices,
       Split,
       Ratingselect
     }
@@ -185,17 +198,6 @@
         .sell-count
           font-size: 10px
           margin-right: 12px
-      .price
-        font-weight: 700
-        line-height: 24px
-        .now
-          margin-right: 8px
-          font-size: 14px
-          color: rgb(240, 20, 20)
-        .old
-          text-decoration: line-through
-          font-size: 10px
-          color: rgb(147, 153, 159)
       .cartcontrol-wrapper
         position: absolute
         right: 12px
@@ -272,5 +274,9 @@
               color: rgb(0, 160, 220)
             .icon-thumb_down
               color: rgb(147, 153, 159)
+        .no-rating
+          padding: 16px 0
+          font-size: 12px
+          color: rgb(147,153, 159)
 </style>
 
