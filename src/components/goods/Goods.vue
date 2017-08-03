@@ -10,8 +10,8 @@
       </ul>
     </div>
     <div class="foods-wrapper" ref="foodsWrapper">
-      <ul>
-        <li v-for="item in goods" :key="item.id" class="food-list food-list-hook">
+      <ul ref="ul">
+        <li v-for="item in goods" :key="item.id" class="food-list food-list-hook" ref="foodList">
           <h1 class="tittle">{{item.name}}</h1>
           <ul>
             <li @click="selectFood(food, $event)" v-for="food in item.foods" :key="food.id" class="food-item">
@@ -104,7 +104,8 @@
         if (!event._constructed) {
           return  // pc下 不会再次触发事件
         }
-        let foodList = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')
+        let foodList = this.$refs.foodList
+
         let el = foodList[index]
         this.foodsScroll.scrollToElement(el, 300)
       },
@@ -130,7 +131,7 @@
         })
       },
       _calculateHeight() {
-        let foodList = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')
+        let foodList = this.$refs.foodList
         let height = 0
         this.listHeight.push(height)
         for (let i = 0; i < foodList.length; i++) {
