@@ -12,7 +12,10 @@
         <router-link to="/seller">商家</router-link>
       </div>
     </div>
-    <router-view :seller="seller"></router-view>
+    <!-- 组件状态缓存到内存里，再次触发直接从内存里把组件状态恢复  -->
+    <keep-alive>
+      <router-view :seller="seller"></router-view>
+    </keep-alive>
   </div>
 </template>
 
@@ -40,7 +43,6 @@
           // this.seller = response.data
           // Vue 不能检测到对象属性的添加或删除 所以创建一个新的对象，让它包含原对象的属性和新的属性
           this.seller = Object.assign({}, this.seller, response.data)
-          console.log(this.seller.id)
         }
       })
     },

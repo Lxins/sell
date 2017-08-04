@@ -68,83 +68,87 @@
 </template>
 
 <script>
-import BScroll from 'better-scroll'
-import Star from '@/components/star/Star'
-import Split from '@/components/split/Split'
-import Icons from '@/components/Icons/Icons'
+  import BScroll from 'better-scroll'
+  import {saveToLocal, loadFromLocal} from '@/common/js/store'
+  import Star from '@/components/star/Star'
+  import Split from '@/components/split/Split'
+  import Icons from '@/components/Icons/Icons'
 
-export default {
-  props: {
-    seller: {
-      type: Object
-    }
-  },
-  data() {
-    return {
-      favorite: false
-    }
-  },
-  computed: {
-    favoriteText() {
-      return this.favorite ? '已收藏' : '收藏'
-    }
-  },
-  created() { // vue生命周期来说 created不能确保DOM已经渲染 better-scroll必须确保DOM已经渲染
-    this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee']
-  },
-  watch: {  // 观察
-    'seller'() {
+  export default {
+    props: {
+      seller: {
+        type: Object
+      }
+    },
+    data() {
+      return {
+        favorite: (() => {
+          return loadFromLocal(this.seller.id, 'favorite', false)
+        })()
+      }
+    },
+    computed: {
+      favoriteText() {
+        return this.favorite ? '已收藏' : '收藏'
+      }
+    },
+    created() { // vue生命周期来说 created不能确保DOM已经渲染 better-scroll必须确保DOM已经渲染
+      this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee']
+    },
+    watch: {  // 观察
+      'seller'() {
+        this._initScroll()
+        this._initPice()
+      }
+    },
+    mounted() { // DOM加载后的执行
       this._initScroll()
       this._initPice()
-    }
-  },
-  mounted() { // DOM加载后的执行
-    this._initScroll()
-    this._initPice()
-  },
-  methods: {
-    toggleFavorite(event) {
-      if (!event._constructed) {
-        return
-      }
-      this.favorite = !this.favorite
     },
-    _initScroll() {
-      this.$nextTick(() => {
-        if (!this.scroll) {
-          this.scroll = new BScroll(this.$refs.seller, {
-            click: true
-          })
-        } else {
-          this.scroll.refresh()
+    methods: {
+      toggleFavorite(event) {
+        if (!event._constructed) {
+          return
         }
-      })
-    },
-    _initPice() {
-      if (this.seller.pics) {
-        let picWidth = 120
-        let margin = 6
-        let width = (picWidth + margin) * this.seller.pics.length - margin
-        this.$refs.picList.style.width = width + 'px'
+        this.favorite = !this.favorite
+        saveToLocal(this.seller.id, 'favorite', this.favorite)
+      },
+      _initScroll() {
         this.$nextTick(() => {
-          if (!this.picScroll) {
-            this.picScroll = new BScroll(this.$refs.picWrapper, {
-              scrollX: true,
-              eventPassthrough: 'vertical'  // 忽略竖向滚动
+          if (!this.scroll) {
+            this.scroll = new BScroll(this.$refs.seller, {
+              click: true
             })
           } else {
-            this.picScroll.refresh()
+            this.scroll.refresh()
           }
         })
+      },
+      _initPice() {
+        if (this.seller.pics) {
+          let picWidth = 120
+          let margin = 6
+          let width = (picWidth + margin) * this.seller.pics.length - margin
+          this.$refs.picList.style.width = width + 'px'
+          this.$nextTick(() => {
+            if (!this.picScroll) {
+              this.picScroll = new BScroll(this.$refs.picWrapper, {
+                scrollX: true,
+                eventPassthrough: 'vertical'  // 忽略竖向滚动
+              })
+            } else {
+              this.picScroll.refresh()
+            }
+          })
+        }
       }
+    },
+    components: {
+      Star,
+      Split,
+      'v-icons': Icons
     }
-  },
-  components: {
-    Star,
-    Split,
-    'v-icons': Icons
   }
-}
 </script>
 
 <style lang="sass">
