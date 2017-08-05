@@ -28,7 +28,7 @@
       <ratingselect @ratingtypeSelect="ratingtypeSelect" @contentToggle="contentToggle" :select-type="selectType" :only-content="onlyContent" :ratings="ratings"></ratingselect>
       <div class="rating-wrapper">
         <ul v-show="ratings && ratings.length">
-          <li v-show="needShow(ratings.rateType,ratings.text)" v-for="rating in ratings" class="rating-item" :key="rating.id">
+          <li v-show="needShow(rating.rateType,rating.text)" v-for="rating in ratings" class="rating-item border-1px" :key="rating.id">
             <div class="avatar">
                <img :src="rating.avatar" width="28" height="28">
             </div>
@@ -36,13 +36,14 @@
               <h1 class="name">{{rating.username}}</h1>
               <div class="star-wrapper">
                 <strar :size="24" :score="rating.score"></strar>
+                <span v-show="rating.deliveryTime" class="delivery">{{rating.deliveryTime}}分钟送达</span>
               </div>
               <p class="text">{{rating.text}}</p>
               <div class="recommend">
-                <span class="icon-thumb_up"></span>
+                <span v-show="rating.recommend && rating.recommend.length" :class="{'icon-thumb_up':rating.rateType===0, 'icon-thumb_down':rating.rateType===1}"></span>
                 <span v-for="item in rating.recommend" class="item" :key="item.id">{{item}}</span>
               </div>
-              <div class="time">{{rating.rateTime}}</div>
+              <div class="time">{{rating.rateTime | formatDate}}</div>
             </div>
           </li>
         </ul>
@@ -56,6 +57,7 @@
   import Strar from '@/components/star/Star'
   import Split from '@/components/split/Split'
   import Ratingselect from '@/components/ratingselect/Ratingselect'
+  import {formatDate} from '@/common/js/date'
 
   const ERR_OK = 0
   const ALL = 2
@@ -99,15 +101,21 @@
       },
       ratingtypeSelect(type) {
         this.selectType = type
-        // this.$nextTick(() => {
-        //   this.scroll.refresh()
-        // })
+        this.$nextTick(() => {
+          this.ratingsScrol.refresh()
+        })
       },
       contentToggle(onlyContent) {
         this.onlyContent = onlyContent
-        // this.$nextTick(() => {
-        //   this.scroll.refresh()
-        // })
+        this.$nextTick(() => {
+          this.ratingsScrol.refresh()
+        })
+      }
+    },
+    filters: {
+      formatDate(time) {
+        let date = new Date(time)
+        return formatDate(date, 'yyyy-MM-dd hh:mm')
       }
     },
     components: {
@@ -119,6 +127,8 @@
 </script>
 
 <style lang="sass">
+  @import "../../common/sass/mixin.sass"
+
   .ratings
     position: absolute
     top: 174px
@@ -173,5 +183,68 @@
             line-height: 18px
             font-size: 12px
             color: rgba(147, 153, 159, .9)
+    .rating-wrapper
+      padding: 0 18px
+      .rating-item
+        display: flex
+        padding: 18px 0
+        @include border-1px(rgba(7, 17, 27, .1))
+        .avatar
+          flex: 0 0 28px
+          width: 28px
+          margin-right: 12px
+          img
+            border-radius: 50%
+      .content
+        position: relative
+        flex: 1
+        .name
+          margin-bottom: 4px
+          line-height: 12px
+          font-size: 10px
+          color: rgb(7, 17, 27)
+        .star-wrapper
+          margin-bottom: 6px
+          font-size: 0
+          .star, .delivery
+            display: inline-block
+            vertical-align: top
+          .star
+            margin-right: 6px
+          .delivery
+            line-height: 12px
+            font-size: 10px
+            color: rgb(147, 153, 159)
+        .text
+          margin-bottom: 8px
+          line-height: 18px
+          color: rgb(7, 17, 27)
+          font-size: 12px
+        .recommend
+          line-height: 16px
+          font-size: 0
+          .icon-thumb_up, .icon-thumb_down, .item
+            display: inline-block
+            margin: 0 8px 4px 0
+            line-height: 16px
+            font-size: 12px
+          .icon-thumb_up
+            color: rgb(0, 160, 220)
+          .icon-thumb_down
+            color: rgb(183, 187, 191)
+          .item
+            padding: 0 6px
+            border: 1px solid rgba(7, 17, 27, .1)
+            border-radius: 1px
+            font-size: 9px
+            color: rgb(147, 153, 159)
+            background-color: #fff
+        .time
+          position: absolute
+          top: 0
+          right: 0
+          line-height: 12px
+          font-size: 10px
+          color: rgb(147, 153, 159)
 </style>
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="shopcart">
+  <div @click="maskShow" class="shopcart">
     <div class="centent">
       <div class="centent-left">
         <div class="logo-wrapper">
@@ -17,12 +17,36 @@
         </div>
       </div>
     </div>
+    <div class="shopcart-list">
+      <div class="list-herder">
+        <h1 class="title">购物车</h1>
+        <span class="empty">清空</span>
+      </div>
+      <div class="list-content">
+        <ul>
+          <li class="food">
+            <span class="name"></span>
+            <div class="price">
+              <span>￥</span>
+            </div>
+            <div class="cartcontrol-wrapper">
+              <cartcontrol :food="food"></cartcontrol>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+  import Cartcontrol from '@/components/cartcontrol/Cartcontrol'
+
   export default {
     props: {
+      food: {
+        type: Object
+      },
       selectFoods: {
         type: Array,
         default() {
@@ -41,6 +65,14 @@
       minPrice: {
         type: Number,
         default: 0
+      },
+      maskState: {
+        type: Boolean
+      }
+    },
+    data() {
+      return {
+        'stateType': this.maskState
       }
     },
     computed: {
@@ -75,6 +107,16 @@
           return 'enough'
         }
       }
+    },
+    methods: {
+      maskShow() {
+        this.stateType = true
+        this.$emit('stateType', this.stateType)
+        console.log(this.food)
+      }
+    },
+    components: {
+      Cartcontrol
     }
   }
 </script>

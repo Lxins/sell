@@ -1,9 +1,9 @@
 <template>
   <div class="ratingselect">
     <div class="rating-type border-1px">
-      <span @click="select(2, $event)" class="block positive" :class="{'active':MySelectType===2}">{{desc.all}}<span class="count"></span>{{ratings.length}}</span>
-      <span @click="select(0, $event)" class="block positive" :class="{'active':MySelectType===0}">{{desc.positive}}<span class="count"></span>{{positive.length}}</span>
-      <span @click="select(1, $event)" class="block negative" :class="{'active':MySelectType===1}">{{desc.negative}}<span class="count"></span>{{negative.length}}</span>
+      <span @click="select(2, $event)" class="block positive" :class="{'active':MySelectType===2}">{{desc.all}}<span class="count">{{ratings.length}}</span></span>
+      <span @click="select(0, $event)" class="block positive" :class="{'active':MySelectType===0}">{{desc.positive}}<span class="count">{{positive.length}}</span></span>
+      <span @click="select(1, $event)" class="block negative" :class="{'active':MySelectType===1}">{{desc.negative}}<span class="count">{{negative.length}}</span></span>
     </div>
     <div @click="toggleContent" class="switch border-1px" :class="{'on':MyOnlyContent}">
       <span class="icon-check_circle"></span>
@@ -46,8 +46,8 @@
     },
     data() {
       return {
-        MySelectType: this.selectType,
-        MyOnlyContent: this.onlyContent
+        'MySelectType': this.selectType,
+        'MyOnlyContent': this.onlyContent
       }
     },
     computed: {

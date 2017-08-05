@@ -34,7 +34,10 @@
         </li>
       </ul>
     </div>
-     <shopcart :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
+     <shopcart :food="selectedFood" @stateType="stateType" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice" :mask-state="maskState"></shopcart>
+    <transition name="fade">
+      <!-- <div v-show="maskState" class="list-mask"></div> -->
+    </transition>
     <food :food="selectedFood" ref="food"></food>
   </div>
 </template>
@@ -60,7 +63,8 @@
         goods: [],
         listHeight: [],
         scrollY: 0,
-        selectedFood: {}
+        selectedFood: {},
+        maskState: false
       }
     },
     computed: {
@@ -139,6 +143,10 @@
           height += item.clientHeight
           this.listHeight.push(height)
         }
+      },
+      stateType(type) {
+        console.log(type)
+        this.maskState = type
       }
     },
     components: {
@@ -227,5 +235,17 @@
             position: absolute
             right: 0
             bottom: 12px
+    .list-mask
+      position: fixed
+      left: 0
+      top: 0
+      width: 100%
+      height: 100%
+      background: rgba(7, 17, 27, .6)
+      z-index: 40
+      &.fade-enter-active, &.fade-leave-active
+        transition: 1s
+      &.fade-enter, &.fade-leave-to
+        opacity: 0
   </style>
 
