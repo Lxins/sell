@@ -1,42 +1,47 @@
 <template>
-  <div class="shopcart">
-    <div @click="maskShow" class="centent">
-      <div class="centent-left">
-        <div class="logo-wrapper">
-          <div class="logo" :class="{'highlight': totalCount > 0}">
-            <i class="icon-shopping_cart" :class="{'highlight': totalCount > 0}"></i>
+  <div ref="shopcartList">
+    <div class="shopcart">
+      <div @click="toggleList" class="centent">
+        <div class="centent-left">
+          <div class="logo-wrapper">
+            <div class="logo" :class="{'highlight': totalCount > 0}">
+              <i class="icon-shopping_cart" :class="{'highlight': totalCount > 0}"></i>
+            </div>
+            <div class="num" v-show="totalCount > 0">{{totalCount}}</div>
           </div>
-          <div class="num" v-show="totalCount > 0">{{totalCount}}</div>
+          <div class="price" :class="{'highlight': totalPrice > 0}">￥{{totalPrice}}</div>
+          <div class="desc">另需配送费￥{{deliveryPrice}}元</div>
         </div>
-        <div class="price" :class="{'highlight': totalPrice > 0}">￥{{totalPrice}}</div>
-        <div class="desc">另需配送费￥{{deliveryPrice}}元</div>
-      </div>
-      <div class="centent-right">
-        <div class="pay" :class="payClass">
-          {{payDesc}}
+        <div class="centent-right">
+          <div @click.stop.prevent="pay" class="pay" :class="payClass">
+            {{payDesc}}
+          </div>
         </div>
       </div>
+      <transition name="move">
+        <div v-show="listShow" class="shopcart-list">
+          <div class="list-herder border-1px">
+            <h1 class="title">购物车</h1>
+            <span class="empty" @click="empty">清空</span>
+          </div>
+          <div class="list-content" ref="listContent">
+            <ul>
+              <li v-for="shop in selectFoods" class="food" :key="shop.id">
+                <span class="name">{{shop.name}}</span>
+                <div class="price">
+                  <span>￥{{shop.price * shop.count}}</span>
+                </div>
+                <div class="cartcontrol-wrapper">
+                  <cartcontrol :food="shop"></cartcontrol>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </transition>
     </div>
-    <transition name="move">
-      <div v-show="this.maskState" class="shopcart-list" ref="shopcartList">
-        <div class="list-herder border-1px">
-          <h1 class="title">购物车</h1>
-          <span class="empty">清空</span>
-        </div>
-         <div class="list-content">
-          <ul>
-            <li v-for="shop in selectFoods" class="food" :key="shop.id">
-              <span class="name">{{shop.name}}</span>
-              <div class="price">
-                <span>￥{{shop.price}}</span>
-              </div>
-              <div class="cartcontrol-wrapper">
-                <cartcontrol :food="food"></cartcontrol>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
+    <transition name="fade">
+      <div @click="listHide" v-show="listShow" class="list-mask"></div>
     </transition>
   </div>
 </template>
@@ -47,9 +52,6 @@
 
   export default {
     props: {
-      food: {
-        type: Object
-      },
       selectFoods: {  // 选中的商品数据
         type: Array,
         default() {
@@ -68,14 +70,11 @@
       minPrice: {
         type: Number,
         default: 0
-      },
-      maskState: {
-        type: Boolean
       }
     },
     data() {
       return {
-        'stateType': this.maskState
+        listState: true
       }
     },
     computed: {
@@ -109,20 +108,49 @@
         } else {
           return 'enough'
         }
+      },
+      listShow() {
+        if (!this.totalCount) {
+          return false
+        }
+        let show = !this.listState
+
+        // 点击取反后执行BScroll
+        if (show) {
+          this.$nextTick(() => {
+            if (!this.scroll) {
+              this.scroll = new BScroll(this.$refs.listContent, {
+                click: true
+              })
+            } else {
+              this.scroll.refresh()
+            }
+          })
+        }
+        return show
       }
     },
-    created() {
-      this.$nextTick(() => {
-        this.shopcartScrol = new BScroll(this.$refs.shopcartList, {
-          click: true
-        })
-      })
-    },
     methods: {
-      maskShow() {
-        if (this.totalCount > 0) {
-          this.stateType = !this.stateType
-          this.$emit('stateType', this.stateType)
+      toggleList() {
+        if (!this.totalCount) {
+          return
+        }
+        this.listState = !this.listState
+      },
+      listHide() {
+        this.listState = true
+      },
+      empty() {
+        this.selectFoods.forEach((food) => {
+          food.count = 0
+          this.listState = true
+        })
+      },
+      pay() {
+        if (this.totalPrice < this.minPrice) {
+          return
+        } else {
+          return alert('你赚了，只需' + this.totalPrice + '元')
         }
       }
     },
@@ -272,4 +300,16 @@
             position: absolute
             right: 0
             bottom: 6px
+  .list-mask
+      position: fixed
+      left: 0
+      top: 0
+      width: 100%
+      height: 100%
+      background: rgba(7, 17, 27, .6)
+      z-index: 40
+      &.fade-enter-active, &.fade-leave-active
+        transition: .5s
+      &.fade-enter, &.fade-leave-to
+        opacity: 0
 </style>

@@ -26,7 +26,7 @@
                 </div>
                 <prices :food="food"></prices>
                 <div class="cartcontrol-wrapper">
-                  <cartcontrol @count="count" :food="food"></cartcontrol>
+                  <cartcontrol :food="food"></cartcontrol>
                 </div>
               </div>
             </li>
@@ -34,10 +34,7 @@
         </li>
       </ul>
     </div>
-     <shopcart :food="selectedFood" @stateType="stateType" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice" :mask-state="maskState"></shopcart>
-    <transition name="fade">
-       <div @stateType="stateType" @click="shopcartHide" v-show="maskState" class="list-mask"></div>
-    </transition>
+     <shopcart :food="selectedFood" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
     <food :food="selectedFood" ref="food"></food>
   </div>
 </template>
@@ -63,9 +60,7 @@
         goods: [],
         listHeight: [],
         scrollY: 0,
-        selectedFood: {}, // food
-        maskState: false, // list-mask是否显示
-        countNum: 0  // 记录点击次数
+        selectedFood: {} // food
       }
     },
     computed: {
@@ -144,18 +139,6 @@
           height += item.clientHeight
           this.listHeight.push(height)
         }
-      },
-      count(count) {
-        this.countNum = count
-      },
-      stateType(type) { // 接受Shopcart的 maskState
-        if (this.countNum > 0) {
-          this.maskState = type
-        }
-        return
-      },
-      shopcartHide() {
-        this.maskState = false
       }
     },
     components: {
@@ -244,17 +227,5 @@
             position: absolute
             right: 0
             bottom: 12px
-    .list-mask
-      position: fixed
-      left: 0
-      top: 0
-      width: 100%
-      height: 100%
-      background: rgba(7, 17, 27, .6)
-      z-index: 40
-      &.fade-enter-active, &.fade-leave-active
-        transition: 1s
-      &.fade-enter, &.fade-leave-to
-        opacity: 0
   </style>
 
