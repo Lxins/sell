@@ -15,6 +15,9 @@
      props: {
        food: {
          type: Object
+       },
+       count: {
+         type: Number
        }
      },
      created() {
@@ -30,6 +33,7 @@
          } else {
            this.food.count++
          }
+         this.$emit('count', this.food.count)
        },
        decreaseCart(event) {
          if (!event._constructed) {

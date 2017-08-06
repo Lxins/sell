@@ -1,6 +1,6 @@
 <template>
-  <div @click="maskShow" class="shopcart">
-    <div class="centent">
+  <div class="shopcart">
+    <div @click="maskShow" class="centent">
       <div class="centent-left">
         <div class="logo-wrapper">
           <div class="logo" :class="{'highlight': totalCount > 0}">
@@ -17,29 +17,32 @@
         </div>
       </div>
     </div>
-    <div class="shopcart-list">
-      <div class="list-herder">
-        <h1 class="title">购物车</h1>
-        <span class="empty">清空</span>
+    <transition name="move">
+      <div v-show="this.maskState" class="shopcart-list" ref="shopcartList">
+        <div class="list-herder border-1px">
+          <h1 class="title">购物车</h1>
+          <span class="empty">清空</span>
+        </div>
+         <div class="list-content">
+          <ul>
+            <li v-for="shop in selectFoods" class="food" :key="shop.id">
+              <span class="name">{{shop.name}}</span>
+              <div class="price">
+                <span>￥{{shop.price}}</span>
+              </div>
+              <div class="cartcontrol-wrapper">
+                <cartcontrol :food="food"></cartcontrol>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
-      <div class="list-content">
-        <ul>
-          <li class="food">
-            <span class="name"></span>
-            <div class="price">
-              <span>￥</span>
-            </div>
-            <div class="cartcontrol-wrapper">
-              <cartcontrol :food="food"></cartcontrol>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div>
+    </transition>
   </div>
 </template>
 
 <script>
+  import BScroll from 'better-scroll'
   import Cartcontrol from '@/components/cartcontrol/Cartcontrol'
 
   export default {
@@ -47,18 +50,18 @@
       food: {
         type: Object
       },
-      selectFoods: {
+      selectFoods: {  // 选中的商品数据
         type: Array,
         default() {
           return [
-            {
-              price: 10,
-              count: 3
-            }
+            // {
+            //   price: 10,
+            //   count: 3
+            // }
           ]
         }
       },
-      deliveryPrice: {
+      deliveryPrice: {  // 配送费
         type: Number,
         default: 0
       },
@@ -108,11 +111,19 @@
         }
       }
     },
+    created() {
+      this.$nextTick(() => {
+        this.shopcartScrol = new BScroll(this.$refs.shopcartList, {
+          click: true
+        })
+      })
+    },
     methods: {
       maskShow() {
-        this.stateType = true
-        this.$emit('stateType', this.stateType)
-        console.log(this.food)
+        if (this.totalCount > 0) {
+          this.stateType = !this.stateType
+          this.$emit('stateType', this.stateType)
+        }
       }
     },
     components: {
@@ -122,6 +133,8 @@
 </script>
 
 <style lang="sass">
+  @import "../../common/sass/mixin.sass"
+
   .shopcart
     position: fixed
     left: 0
@@ -207,4 +220,56 @@
           &.enough
             background: #00b43c
             color: #fff
+    .shopcart-list
+      position: absolute
+      top: 0
+      left: 0
+      z-index: -1
+      width: 100%
+      transform: translate3d(0, -100%, 0)
+      &.move-enter-active, &.move-leave-active
+        transition: .7s
+      &.move-enter, &.move-leave-to
+        transform: translate3d(0, 100%, 0)
+      .list-herder
+        height: 40px
+        line-height: 40px
+        padding: 0 18px
+        background: #f3f5f7
+        @include border-1px(rgba(7, 17, 27, .1))
+        .title
+          float: left
+          line-height: 40px
+          font-size: 14px
+          font-weight: 200
+          color: rgb(7, 17, 27)
+        .empty
+          float: right
+          font-size: 12px
+          color: rgb(0, 160, 220)
+      .list-content
+        padding: 0 18px
+        max-height: 217px
+        overflow: hidden
+        background: #fff
+        .food
+          position: relative
+          padding: 12px 0
+          box-sizing: border-box
+          .name
+            line-height: 24px
+            font-size: 14px
+            color: rgb(7, 17, 27)
+          .price
+            position: absolute
+            right: 90px
+            bottom: 12px
+            line-height: 24px
+            font-size: 14px
+            font-weight: 700
+            color: rgb(240, 20, 20)
+          .cartcontrol-wrapper
+            position: absolute
+            right: 0
+            bottom: 6px
 </style>

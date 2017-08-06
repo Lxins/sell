@@ -26,7 +26,7 @@
                 </div>
                 <prices :food="food"></prices>
                 <div class="cartcontrol-wrapper">
-                  <cartcontrol :food="food"></cartcontrol>
+                  <cartcontrol @count="count" :food="food"></cartcontrol>
                 </div>
               </div>
             </li>
@@ -36,7 +36,7 @@
     </div>
      <shopcart :food="selectedFood" @stateType="stateType" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice" :mask-state="maskState"></shopcart>
     <transition name="fade">
-      <!-- <div v-show="maskState" class="list-mask"></div> -->
+       <div @stateType="stateType" @click="shopcartHide" v-show="maskState" class="list-mask"></div>
     </transition>
     <food :food="selectedFood" ref="food"></food>
   </div>
@@ -63,8 +63,9 @@
         goods: [],
         listHeight: [],
         scrollY: 0,
-        selectedFood: {},
-        maskState: false
+        selectedFood: {}, // food
+        maskState: false, // list-mask是否显示
+        countNum: 0  // 记录点击次数
       }
     },
     computed: {
@@ -78,7 +79,7 @@
         }
         return 0
       },
-      selectFoods() {
+      selectFoods() { // 选中的商品数据
         let foods = []
         this.goods.forEach((good) => {
           good.foods.forEach((food) => {
@@ -117,7 +118,7 @@
         if (!event._constructed) {
           return  // pc下 不会再次触发事件
         }
-        this.selectedFood = food
+        this.selectedFood = food // food数据
         this.$refs.food.show()
       },
       _initScroll() {
@@ -144,9 +145,17 @@
           this.listHeight.push(height)
         }
       },
-      stateType(type) {
-        console.log(type)
-        this.maskState = type
+      count(count) {
+        this.countNum = count
+      },
+      stateType(type) { // 接受Shopcart的 maskState
+        if (this.countNum > 0) {
+          this.maskState = type
+        }
+        return
+      },
+      shopcartHide() {
+        this.maskState = false
       }
     },
     components: {
