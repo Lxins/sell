@@ -14,12 +14,12 @@ export default new Router({
   linkActiveClass: 'active',
   routes: [
     {
-      path: './goods',
+      path: '/goods',
       name: 'goods',
       component: Goods
     },
     {
-      path: './ratings',
+      path: '/ratings',
       name: 'ratings',
       component: Ratings
     },
@@ -29,7 +29,8 @@ export default new Router({
       component: Seller
     },
     {
-      path: '/', redirect: './goods'
+      path: '/',
+      redirect: './goods'
     }
   ]
 })
